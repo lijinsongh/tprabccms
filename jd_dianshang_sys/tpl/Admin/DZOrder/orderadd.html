@@ -1,0 +1,342 @@
+<extend name="Public:base" />
+<block name="title">订单提交</block>
+<block name="content">
+<style>
+body .demo-class .layui-layer-title{background:#1169EE; color:#fff; border: none;}
+</style>
+<div class="page-header">
+	<h1>首页 &gt;订单中心&gt; 订单提交</h1>
+</div>
+<div class="col-xs-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
+			id="myTab">
+			<li class="active"><a href="#home" data-toggle="tab">订单提交</a></li>
+		</ul>
+		<div class="tab-content">
+			<div>
+				<form action="" method="get">
+                <input type="hidden" name="s" value="Admin/DZOrder/orderadd"/> 
+	          	  <div class="row">
+	          	  	<div class="col-sm-2 m-b-xs">
+		              <input placeholder="订单产生日期（开始）" value="{$_GET['sdate']}" class="laydate-icon-molv skindemo form-control" name="sdate" id="sdate" style=" height:36px;cursor:pointer;">
+	                    </div>
+	                    <div class="col-sm-2 m-b-xs">
+		                   <input placeholder="订单产生日期（结束）" value="{$_GET['edate']}" class="laydate-icon-molv skindemo form-control" name="edate" id="edate" style=" height:36px;cursor:pointer;">
+		                 </div>
+		                 <div class="col-sm-2 m-b-xs" >
+	                       <input placeholder="请输入订单编号" class="form-control" type="text"  style=" height:36px;" name="orderid" id="orderid" value="{$_GET['orderid']}">
+	                    </div>
+                     <div class="col-sm-2 m-b-xs">
+		                    <select name="status" id="status" class="input-sm form-control input-s-sm inline" style="height:36px;">                             
+                                 <option value="0" {$_GET['status']==0?'selected':''}>请选择订单状态</option>
+                                  <option value="1" {$_GET['status']==1?'selected':''}>待审核</option>
+                                  <option value="2" {$_GET['status']==2?'selected':''}>已审核发货|待结单</option>
+                     </select>
+                     </div>
+                     <div class="col-sm-2 m-b-xs">
+		                    <button type="submit" class="btn btn-sm btn-primary" style=" height:36px; width:5em">查询</button>
+		            </div>
+		            <div class="col-sm-2 m-b-xs">
+		                    <a href="#bjy-add" data-toggle="modal" class="btn btn-sm btn-warning" id="editclear" style="height:36px;width:6em;float:right;">添加订单</a>
+		            </div>
+	          	  </div>
+	          	</form>
+			</div>
+			<br/>
+			<table
+				class="table table-striped table-bordered table-hover table-condensed">
+				<tr>
+					<th>订单日期</th>
+          <th>订单编号</th>
+          <th>销售名称</th>
+          <th>客户名称</th>
+          <th>客户电话</th>
+          <th>客户地址</th>
+          <th>产品名称</th>
+          <th>数量</th>
+          <th>单价</th>
+          <th>总价</th>
+          <th>定金</th>
+          <th>尾款</th>
+          <th>寄件人</th>
+          <th>寄件人电话</th>
+          <th>备注</th>
+          <th>状态</th>
+          <th>操作</th>
+				</tr>
+				<volist name="list" id="vo">
+         <tr>
+         <td>{$vo.createtime}</td>
+         <td>{$vo.orderid}</td>
+          <td>{$vo.realname}</td>
+          <td>{$vo.kfname}</td>
+          <td>{$vo.kfphone}</td>
+          <td>{$vo.kfadress}</td>
+          <td><if condition="$vo.pronameother neq null">
+          	  	{$vo.pronameother}
+          	  	<else/>
+          	  	{$vo.proname}
+          	  	</if></td>
+          <td>{$vo.pronum}</td>
+          <td>{$vo.price}</td>
+          <td>{$vo.totalprice}</td>
+          <td>{$vo.dingjin}</td>
+          <td>{$vo.weikuan}</td>
+          <td>{$vo.jijianname}</td>
+          <td>{$vo.jijianphone}</td>
+          <td>{$vo.remark}</td>
+          <td>
+          		<if condition="$vo.status eq 0">
+          	  	<span style="color:red;">待审核</span>
+          	  	</if>
+          	  	<if condition="$vo.status eq 1">
+          	  	<span style="color:green;">已发货</span>
+          	  	</if>
+          	  	<if condition="$vo.status eq 2">
+          	  	<span style="color:green;">已结单</span>
+          	  	</if>
+          </td>
+          <td>
+          <if condition="$vo.status neq 0">
+          	  	<a href="javascript:void(0)" onclick="mingxi('{$vo.id}');">查看物流</a>
+          	  	</if>
+          <a href="#bjy-add" data-toggle="modal" onclick="update_dzorder('{$vo.id}','{$vo.proid}','{$vo.kfname}','{$vo.kfphone}','{$vo.kfadress}','{$vo.pronum}','{$vo.price}','{$vo.totalprice}','{$vo.daiqustatus}','{$vo.dingjin}','{$vo.remark}','{$vo.jijianname}','{$vo.jijianphone}');">修改</a></td>
+         </tr>
+        </volist>       
+			</table>
+			<div	class="fenye">
+     	{$page}
+     </div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="bjy-add" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">订单操作</h4>
+			</div>
+			<div class="modal-body">
+					<table
+						class="table table-striped table-bordered table-hover table-condensed">
+						<input type="hidden" name="id" id="id"/>
+						<tr>
+ 				<th style="text-align:right;">产品名称</th>
+ 				<td><select name="proid" id="proid" class="input-medium">
+ 								<option value="0">请选择产品类型</option>
+                                <volist name="prolist" id="vo">
+                                  <option value="{$vo.id}">{$vo.proname}</option>
+                                  </volist>
+                                </select><span style="color:red;">*</span>
+               </td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">客户姓名</th> 
+ 				<td><input type="text" class="input-medium" id="kfname" name="kfname"  /><span style="color:red;">*</span></td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">客户电话</th> 
+ 				<td><input type="text" class="input-medium" id="kfphone" name="kfphone"  /><span style="color:red;">*</span></td>
+ 			</tr>
+			<tr>
+ 				<th style="text-align:right;">联系地址</th> 
+ 				<td><input type="text" class="input-medium" id="kfadress" name="kfadress"  /><span style="color:red;">*</span></td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">数量</th>
+ 				<td><input type="text" class="input-medium" id="pronum" name="pronum"  /><span style="color:red;">*</span></td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">单价</th>
+ 				<td><input type="number" class="input-medium" id="price" name="price"  /><span style="color:red;">*</span></td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">总价</th>
+ 				<td><input type="number" class="input-medium" id="totalprice" name="totalprice"  /><span style="color:red;">*</span></td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">是否代收</th>
+ 				<td><select name="daiqustatus" id="daiqustatus" class="input-medium" onchange="check(this[selectedIndex].value);">
+                                <option value="0">不代收</option>
+                                  <option value="1">代收</option>
+                                </select></td>
+ 			</tr>
+ 			<tr id="dingjinother" style="display:none;">
+ 				<th style="text-align:right;">定金</th>
+ 				<td><input type="number" class="input-medium" id="dingjin" name="dingjin"  /><span style="color:red;">*</span></td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">寄件人姓名</th>
+ 				<td><input type="text" class="input-medium" id=jijianname name="jijianname"  /></td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">寄件人电话</th>
+ 				<td><input type="text" class="input-medium" id="jijianphone" name="jijianphone"  /></td>
+ 			</tr>
+ 			<tr>
+ 				<th style="text-align:right;">备注</th>
+ 				<td><input type="text" class="input-medium" id="remark" name="remark"  /></td>
+ 			</tr>
+						<tr>
+							<th></th>
+							<td><a class="btn btn-success" type="button" id="submit">提交</a></td>
+						</tr>
+					</table>
+			</div>
+		</div>
+	</div>
+</div>
+</block>
+<block name="js">
+<script>
+$(function(){
+	laydate.skin('molv');
+	laydate({
+		  elem: '#sdate',
+		  format: 'YYYY-MM-DD', // 分隔符可以任意定义，该例子表示只显示年月
+		  festival: true, //显示节日
+		});
+	laydate({
+		  elem: '#edate',
+		  format: 'YYYY-MM-DD', // 分隔符可以任意定义，该例子表示只显示年月
+		  festival: true, //显示节日
+		});
+})
+ function update_dzorder(id,proid,kfname,kfphone,kfadress,pronum,price,totalprice,daiqustatus,dingjin,remark,jijianname,jijianphone){
+	$("input").attr("value","");
+	$("#id").val(id);
+	$("#proid").find("option[value='"+proid+"']").attr("selected",true);
+	$("#kfname").val(kfname);
+	$("#kfphone").val(kfphone);
+	$("#kfadress").val(kfadress);
+	$("#pronum").val(pronum);
+	$("#price").val(price);
+	$("#totalprice").val(totalprice);
+	$("#daiqustatus").find("option[value='"+daiqustatus+"']").attr("selected",true);
+	if(daiqustatus == 1){
+		$('#dingjinother').show();
+	} else {
+		$('#dingjinother').hide();
+	}
+	$("#dingjin").val(dingjin);
+	$("#remark").val(remark);
+	$("#jijianname").val(jijianname);
+	$("#jijianphone").val(jijianphone);
+ }
+	function check(val){
+		if(val == 1){
+			$('#dingjinother').show();
+		} else {
+			$('#dingjinother').hide();
+		}
+	}
+	$("#submit").click(function(){
+		 var id = $('#id').val();
+		 var kfname = $('#kfname').val();
+		 var kfphone = $('#kfphone').val();
+		 var kfadress = $('#kfadress').val();
+		 var pronum = $('#pronum').val();
+		 var price = $('#price').val();
+		 var totalprice = $('#totalprice').val();
+		 var daiqustatus = $('#daiqustatus').val();
+		 var proid = $('#proid').val();
+		 var dingjin;
+		 if(daiqustatus == 1){
+			 dingjin = $('#dingjin').val();
+		 } else {
+			 dingjin = 0;
+		 }
+		 var remark = $('#remark').val();
+		 var jijianname = $('#jijianname').val();
+		 var jijianphone = $('#jijianphone').val();
+		 if (id) {
+			 if(kfphone != "" && kfadress != "" && kfname != "" && pronum != "" && price != "" && totalprice != "" && proid != ""){
+				 $.ajax({
+						type:"post",
+						url:"?s=Admin/DZOrder/update_dzorder",
+						data:{'id':id,'kfname':kfname,'kfphone':kfphone,'kfadress':kfadress,'pronum':pronum,'price':price,'totalprice':totalprice,'daiqustatus':daiqustatus,'dingjin':dingjin,'remark':remark,'proid':proid,'jijianname':jijianname,'jijianphone':jijianphone},
+						dataType : "json",			
+						success : function(data){
+							//layer.msg(data['msg'],{time:80000});
+							if(data['msg'] == 1){
+								layer.msg('操作成功',{time:800},function(){
+									location.reload(true);
+								});
+							}
+						}
+					});
+			 }
+		 } else {
+			 if(kfphone != "" && kfadress != "" && kfname != "" && pronum != "" && price != "" && totalprice != "" && proid != ""){
+				 $.ajax({
+						type:"post",
+						url:"?s=Admin/DZOrder/add_order",
+						data:{'kfname':kfname,'kfphone':kfphone,'kfadress':kfadress,'pronum':pronum,'price':price,'totalprice':totalprice,'daiqustatus':daiqustatus,'dingjin':dingjin,'remark':remark,'proid':proid,'jijianname':jijianname,'jijianphone':jijianphone},
+						dataType : "json",			
+						success : function(data){
+							//layer.msg(data['msg'],{time:80000});
+							if(data['msg'] == 1){
+								layer.msg('操作成功',{time:800},function(){
+									location.reload(true);
+								});
+							}
+						}
+					});
+			 }else{
+			 	//layer.msg('请填写相关数据',{time:800});
+			 	layer.msg('请填写相关数据',{time:800});
+			 }
+		 }
+	});
+	$("#editclear").click(function(){
+		$('#id').val("");
+		$('#kfname').val("");
+		$('#kfphone').val("");
+		$('#kfadress').val("");
+		$('#pronum').val("");
+		$('#price').val("");
+		$('#totalprice').val("");
+		$("#daiqustatus").find("option[value='0']").attr("selected",true);
+		$("#proid").find("option[value='0']").attr("selected",true);
+		$('#dingjin').val("");
+		$('#remark').val("");
+		$('#jijianname').val("");
+		$('#jijianphone').val("");
+	});
+	function mingxi($id){
+		$index = layer.load(0,{time:6000});
+		$.ajax({
+			type:"post",
+			url:"?s=Admin/DZOrder/getOrderInfoTwo",
+			data:{'id':$id},
+			dataType : "json",			
+			success : function(data){
+				if(data['status'] == 200){
+			  	    $html="<table class='table table-hover table-bordered' ><thead><th style='text-align:center;'>时间</th><th style='text-align:center;'>地点和跟踪进度</th></thead><tbody id='info'>";
+			  		for(var i=0;i<data['data'].length;i++){
+				  		$html += "<tr><td style='text-align:center;'>"+data['data'][i]['time']+"</td><td style='text-align:center;'>"+data['data'][i]['context']+"</td></tr>";
+				  	}
+			  		$html+="</tbody></table>";
+					 layer.open({
+						  type: 1,  
+						  title:'物流信息',
+						  area: ['600px', '360px'],
+						  shadeClose: false, //点击遮罩关闭
+						  content: $html,
+						  closeBtn:1,
+						  success:function(){
+						  	layer.close($index);
+					 	  }
+					  });
+				}else{
+					layer.close($index);
+					layer.msg(data['message']);
+			 	}
+			}
+		});
+	}
+</script></block>

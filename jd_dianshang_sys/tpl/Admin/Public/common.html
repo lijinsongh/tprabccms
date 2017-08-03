@@ -1,0 +1,85 @@
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/css/style.css">
+<script src="__PUBLIC__/assets/js/jquery-1.8.1.min.js" type="text/javascript"></script>
+<script src="__PUBLIC__/assets/js/jquery.blockUI.js" type="text/javascript"></script>
+<script src="__PUBLIC__/admin/js/jquery.tgpt.app.js" type="text/javascript"></script>
+<script>
+$(function(){
+<?php
+	$toastr = $_SESSION['toastr'];
+	if($toastr){
+		unset($_SESSION['toastr']);
+		if($toastr['type']){
+			echo "showSuccessMessage('".$toastr['msg']."',".$toastr['showtime'].");";
+		}else{
+			echo "showErrorMessage('".$toastr['msg']."',".$toastr['showtime'].");";
+		}
+	}
+?>
+});
+
+/**
+ * post 鐠囬攱鐪�
+ * 閹锋挸鐫�閺堝秴濮熺粩顖涙煙濞夋槮jaxReturn娴肩姴鍙唖tatus 閻樿埖锟斤拷,info 閹绘劗銇氭穱鈩冧紖 鏉╂瑩鍣烽弽瑙勫祦status閸滃nfo鏉╂稖顢戦惄绋跨安閹垮秳缍�
+ * @param url 閸︽澘娼�
+ * @param data post閸欏倹鏆�
+ * @param 閸ョ偠鐨熼崙鑺ユ殶
+ */
+function sendAjax(url, data, callback) {
+    return $.ajax({
+        type: "POST",
+        url: url,
+        data: data,
+        dataType: "json",
+        success: function (data) {
+            var flag = true;
+            if (data == null) {
+                flag = false;
+                showErrorMessage("濞屸剝婀侀弫鐗堝祦鏉╂柨娲�, 1000);
+            }
+            else {
+                if (data["status"] != null) {
+                    if (data["status"] == 0) {
+                        showErrorMessage(data["info"], 1000);
+                        flag = false;
+                    }
+                }
+            }
+            if (flag) {
+                callback(data);
+            }
+        },
+        error: function (data) {
+            showErrorMessage("鏉╂柨娲栭弽鐓庣础闁挎瑨顕�, 1000);
+        }
+    });
+}
+function getJSON(url, data, callback) {
+    return $.ajax({
+        type: "GET",
+        url: url,
+        data: data,
+        dataType: "json",
+        success: function (data) {
+            var flag = true;
+            if (data == null) {
+                flag = false;
+                showErrorMessage("濞屸剝婀侀弫鐗堝祦鏉╂柨娲�, 1000);
+            }
+            else {
+                if (data["status"] != null) {
+                    if (data["status"] == 0) {
+                        showErrorMessage(data["info"], 1000);
+                        flag = false;
+                    }
+                }
+            }
+            if (flag) {
+                callback(data);
+            }
+        },
+        error: function (data) {
+            showErrorMessage("鏉╂柨娲栭弽鐓庣础闁挎瑨顕�, 1000);
+        }
+    });
+}
+</script>

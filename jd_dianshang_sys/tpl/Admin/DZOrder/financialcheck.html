@@ -1,0 +1,257 @@
+<extend name="Public:base" />
+<block name="title">财务核单</block>
+<block name="content">
+<div class="page-header">
+	<h1>首页 &gt;订单中心&gt; 财务核单</h1>
+</div>
+<div class="col-xs-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
+			id="myTab">
+			<li class="active"><a href="#home" data-toggle="tab">财务核单</a></li>
+		</ul>
+		<div class="tab-content">
+			<div>
+				<form action="" method="get">
+                <input type="hidden" name="s" value="Admin/DZOrder/financialcheck"/> 
+	          	  <div class="row">
+		                 <div class="col-sm-2 m-b-xs">
+		              <input placeholder="订单产生日期（开始）" value="{$_GET['sdate']}" class="laydate-icon-molv skindemo form-control" name="sdate" id="sdate" style=" height:36px;cursor:pointer;">
+	                    </div>
+	                    <div class="col-sm-2 m-b-xs">
+		                   <input placeholder="订单产生日期（结束）" value="{$_GET['edate']}" class="laydate-icon-molv skindemo form-control" name="edate" id="edate" style=" height:36px;cursor:pointer;">
+		                 </div>
+		                 <div class="col-sm-2 m-b-xs" >
+	                       <input placeholder="请输入订单编号" class="form-control" type="text"  style=" height:36px;" name="orderid" id="orderid" value="{$_GET['orderid']}">
+	                    </div>
+                     <div class="col-sm-2 m-b-xs">
+		                    <select name="status" id="status" class="input-sm form-control input-s-sm inline" style="height:36px;">                             
+                                 <option value="0" {$_GET['status']==0?'selected':''}>请选择订单状态</option>
+                                  <option value="1" {$_GET['status']==1?'selected':''}>待审核</option>
+                                  <option value="2" {$_GET['status']==2?'selected':''}>已审核发货|待结单</option>
+                     </select>
+                     </div>
+                     <div class="col-sm-2 m-b-xs">
+		                    <select name="qianshoustatus" id="qianshoustatus" class="input-sm form-control input-s-sm inline" style="height:36px;">
+                                	<option value="0" {$_GET['qianshoustatus']==0?'selected':''}>请选择订单签收状态</option>
+                                  <option value="1" {$_GET['qianshoustatus']==1?'selected':''}>未签收</option>
+                                  <option value="2" {$_GET['qianshoustatus']==2?'selected':''}>已签收</option>
+                                </select>
+                     </div>
+                     <div class="col-sm-2 m-b-xs">
+		                    <button type="submit" class="btn btn-sm btn-primary" style=" height:36px; width:5em">查询</button>
+		            </div>
+	          	  </div>
+	          	</form>
+			</div>
+			<br/>
+			<table
+				class="table table-striped table-bordered table-hover table-condensed">
+				<tr>
+					<th>订单日期</th>
+          <th>订单编号</th>
+          <th>销售代表</th>
+          <th>客户名称</th>
+          <th>客户电话</th>
+          <th>客户地址</th>
+          <th>产品名称</th>
+          <th>数量</th>
+          <th>单价</th>
+          <th>总价</th>
+          <th>定金</th>
+          <th>尾款</th>
+          <th>备注</th>
+          <th>是否签收</th>
+          <th>状态</th>
+          <th>操作</th>
+				</tr>
+				<volist name="list" id="vo">
+         <tr>
+         <td>{$vo.createtime}</td>
+         <td>{$vo.orderid}</td>
+          <td>{$vo.realname}</td>
+          <td>{$vo.kfname}</td>
+          <td>{$vo.kfphone}</td>
+          <td>{$vo.kfadress}</td>
+          <td><if condition="$vo.pronameother neq null">
+          	  	{$vo.pronameother}
+          	  	<else/>
+          	  	{$vo.proname}
+          	  	</if></td>
+          <td>{$vo.pronum}</td>
+          <td>{$vo.price}</td>
+          <td>{$vo.totalprice}</td>
+          <td>{$vo.dingjin}</td>
+          <td>{$vo.weikuan}</td>
+          <td>{$vo.remark}</td>
+          <td>
+          	<if condition="$vo.qianshoustatus eq 0">
+          		未签收
+          	</if>
+          	<if condition="$vo.qianshoustatus eq 1">
+          		已签收
+          	</if>
+          	<if condition="$vo.qianshoustatus eq 2">
+          		拒绝签收
+          	</if>
+          </td>
+          <td>
+	          <if condition="$vo.status eq 0">
+	          <span style="color:green;">待审核</span>
+	          </if>
+	          <if condition="$vo.status eq 1">
+	          <span style="color:green;">已发货待结单</span>
+	          </if>
+	          <if condition="$vo.status eq 2">
+	          <span style="color:green;">已结单</span>
+	          </if>
+          	
+          </td>
+          <td>
+          		<if condition="$vo.qianshoustatus eq 0">
+          			<a href="#qianshou" data-toggle="modal" onclick="editqianshou('{$vo.id}');"><span style="color:red;">签收</span></a>
+          		</if>
+          		<if condition="$vo.status eq 0">
+          			<a href="#wuliu" data-toggle="modal" onclick="edityes('{$vo.id}');"><span style="color:red;">审核并发货</span></a>
+          		</if>
+          </td>
+         </tr>
+        </volist>
+			</table>
+			<div	class="fenye">
+     	{$page}
+     </div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="qianshou" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true" style="padding-top:10%;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">订单签收</h4>
+			</div>
+			<div class="modal-body">
+					<table
+						class="table table-striped table-bordered table-hover table-condensed">
+						<input type="hidden" name="id" id="id"/>
+						<tr>
+ 				<th style="text-align:right;">产品名称</th>
+ 				<td><select name="qianshoustatusother" id="qianshoustatusother" class="input-medium">
+ 								<option value="0" {$_GET['qianshoustatus']==0?'selected':''}>签收</option>
+                                  <option value="1" {$_GET['qianshoustatus']==1?'selected':''}>拒绝签收</option>
+                                </select><span style="color:red;">*</span>
+               </td>
+ 			</tr>
+						<tr>
+							<th></th>
+							<td><a class="btn btn-success" type="button" id="submit">提交</a></td>
+						</tr>
+					</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="wuliu" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true" style="padding-top:10%;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">订单发货</h4>
+			</div>
+			<div class="modal-body">
+					<table
+						class="table table-striped table-bordered table-hover table-condensed">
+						<input type="hidden" name="idone" id="idone"/>
+						<tr>
+ 				<th style="text-align:right;">物流公司</th>
+ 				<td><select class="input-medium"  id="companyname">
+					<volist name="wuliu" id="vo">
+						<option value="{$vo.code}">{$vo.name}</option>
+					</volist>
+				</select><span style="color:red;">*</span>
+               </td>
+ 			</tr>
+ 			<th style="text-align:right;">快递单号</th>
+ 				<td><input type="number" class="input-medium" id="code" name="code"  /><span style="color:red;">*</span></td>
+						<tr>
+							<th></th>
+							<td><a class="btn btn-success" type="button" id="wuliusubmit">提交</a></td>
+						</tr>
+					</table>
+			</div>
+		</div>
+	</div>
+</div>
+</block>
+<block name="js">
+<script>
+$(function(){
+	laydate.skin('molv');
+	laydate({
+		  elem: '#sdate',
+		  format: 'YYYY-MM-DD', // 分隔符可以任意定义，该例子表示只显示年月
+		  festival: true, //显示节日
+		});
+	laydate({
+		  elem: '#edate',
+		  format: 'YYYY-MM-DD', // 分隔符可以任意定义，该例子表示只显示年月
+		  festival: true, //显示节日
+		});
+})
+	function editqianshou(id){
+		$("#id").val(id);
+	}
+	function edityes(idone){
+		 $('#idone').val(idone);
+	}
+	$("#submit").click(function(){
+		var id = $("#id").val();
+		var qianshoustatusother = $('#qianshoustatusother').val();
+		 $.ajax({
+				type:"post",
+				url:"?s=Admin/DZOrder/qianshou",
+				data:{'id':id,'qianshoustatusother':qianshoustatusother},
+				dataType : "json",			
+				success : function(data){
+					//layer.msg(data['msg'],{time:80000});
+					if (data['msg'] == 0) {
+			 			layer.msg("签收成功",{time:800},function(){
+							location.reload(true);
+						});
+			 		} else if (data['msg'] == 1) {
+			 			layer.msg("拒绝签收成功",{time:800},function(){
+							location.reload(true);
+						});
+			 		} else if (data['msg'] == 2) {
+			 			layer.msg('签收失败！',{time:800});
+			 		}
+				}
+			});
+	});
+	$("#wuliusubmit").click(function(){
+		var id = $('#idone').val();
+		var companyname = $('#companyname').val();
+		 var code = $('#code').val();
+		 $.ajax({
+				type:"post",
+				url:"?s=Admin/DZOrder/checkpass",
+				data:{'id':id,'companyname':companyname,'code':code},
+				dataType : "json",			
+				success : function(data){
+					//layer.msg(data['msg'],{time:80000});
+					if (data['msg'] == 0) {
+		 				layer.msg("发货成功",{time:500},function(){
+						location.reload(true);
+					});
+			 		} else if (data['msg'] == 1) {
+			 			layer.msg('发货失败！',{time:800});
+			 		}
+				}
+			});
+	});
+</script></block>

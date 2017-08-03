@@ -1,0 +1,105 @@
+<extend name="Public:base" />
+<block name="title">产品报表</block>
+<block name="content">
+<style>
+body .demo-class .layui-layer-title{background:#1169EE; color:#fff; border: none;}
+</style>
+<div class="page-header">
+	<h1>首页 &gt;数据报表&gt; 产品报表</h1>
+</div>
+<div class="col-xs-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
+			id="myTab">
+			<li class="active"><a href="#home" data-toggle="tab">产品报表</a></li>
+		</ul>
+		<div class="tab-content">
+			<div>
+	          	  <div class="row">
+	          	  	<div class="col-sm-2 m-b-xs">
+		              <input placeholder="日期（开始）" value="{$_GET['sdate']}" class="laydate-icon-molv skindemo form-control" name="sdate" id="sdate" style=" height:36px;cursor:pointer;">
+	                    </div>
+	                    <div class="col-sm-2 m-b-xs">
+		                   <input placeholder="日期（结束）" value="{$_GET['edate']}" class="laydate-icon-molv skindemo form-control" name="edate" id="edate" style=" height:36px;cursor:pointer;">
+		                 </div>
+		                 <div class="col-sm-2 m-b-xs" >
+		                 <select name="uid" id="uid" class="input-sm form-control input-s-sm inline" style="height:36px;">                             
+                                 <option value="0" {$_GET['status']==0?'selected':''}>请选择销售人员</option>
+                                 <volist name="xiaoshou" id="vo">
+                                  <option value="{$vo.id}" {$_GET['uid']==$vo['id']?'selected':''}>{$vo.realname}</option>
+                                </volist>
+                     </select>
+	                    </div>
+                     <div class="col-sm-6 m-b-xs">
+		                    <button type="submit" onclick="getData();" class="btn btn-sm btn-primary" style=" height:36px; width:5em">查询</button>
+		            </div>
+	          	  </div>
+			</div>
+			<br/>
+			<div class="bdrcontent text_center" id="report" style="height:500px;border:1px solid #ccc;">
+    
+ 	</div>
+		</div>
+		<div><span id="zongmoney"></span></div>
+	</div>
+</div>
+
+</block>
+<block name="js">
+<script>
+$(function(){
+	laydate.skin('molv');
+	laydate({
+		  elem: '#sdate',
+		  format: 'YYYY-MM-DD', // 分隔符可以任意定义，该例子表示只显示年月
+		  festival: true, //显示节日
+		});
+	laydate({
+		  elem: '#edate',
+		  format: 'YYYY-MM-DD', // 分隔符可以任意定义，该例子表示只显示年月
+		  festival: true, //显示节日
+		});
+})
+
+	function report(title,data){
+ 		 new Highcharts.Chart({ 	  
+		        chart: {renderTo:'report',type:'column'},
+		        title: {text:'产品销售数据' ,x: -20},
+		        subtitle: {
+		            text: title,
+		            x: -20
+		        },
+		        xAxis: {categories:data['column']},
+			    yAxis: {title: {text:'销售总套数'}},
+	            plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            format: '{y}套'
+                        }
+                    }
+                },
+			    legend: {enabled: false},
+		        series: [{ name:'销售总套数', data:data['number']},{ name:'上一周期', data:data['lastnumber']}]
+		    });
+ 	}
+ 	function getData(){
+ 	 	$sdate = $('#sdate').val();
+ 	 	$edate = $('#edate').val();
+ 	 	$proid = $('#proid').val();
+ 	 	$uid = $('#uid').val();
+ 	 	$.ajax({
+			type:"get",
+			url:"?s=Admin/DZDataReport/getproreport",
+			data:{'sdate':$sdate,'edate':$edate,'proid':$proid,'uid':$uid},
+			dataType : "json",			
+			success : function(data){
+				var title = $sdate+" 至 "+$edate;
+	 	 	 	document.getElementById("zongmoney").innerHTML = "从"+$sdate+"至"+$edate+"共销售产品："+data['zongnum']+"套";
+	 	 	 	report(title,data);
+			}
+		});
+ 	}
+ 	$(function(){getData();});
+</script></block>

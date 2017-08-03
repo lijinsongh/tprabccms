@@ -1,0 +1,57 @@
+@CHARSET "UTF-8";
+
+/*-------fenye------*/
+.fenye { text-align:right; overflow:hidden; margin:0 auto; height:36px; display:block; padding:5px 30px 5px 0;}
+.fenye span.page_prev, .fenye span.page_next {
+    background-position: 0 -52px;
+    color: #CCCCCC;
+}
+.fenye .page_cur {
+    background-color: #ff7e11;
+    border: 1px solid #fe6400;
+    color: #FFFFFF;
+    position: relative;
+    text-decoration: none;
+}
+.fenye .page_break {
+    background: none repeat scroll 0 0 transparent;
+    border: medium none;
+    color: #666666;
+    margin: 0;
+    padding: 0 5px;
+}
+.fenye a, .fenye span {
+    background: url("../images/fenye_nav.gif") repeat-x scroll 0 -78px transparent;
+    border: 1px solid #B3B3B3;
+    border-radius: 2px 2px 2px 2px;
+    display: inline-block;
+    font-size: 14px;
+    height: 24px;
+    line-height: 22px;
+    margin: 0 2px;
+    padding: 0 7px;
+    text-align: center;
+    vertical-align: middle;
+}
+.fenye a.page_prev, .fenye a.page_next {
+    background-position: 0 0;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+.fenye .page_prev, .fenye .page_next {
+    background-repeat: no-repeat;
+    border: 0 none;
+    display: inline-block;
+    font-size: 12px;
+    height: 26px;
+    line-height: 26px;
+    overflow: hidden;
+    padding: 0;
+    width: 52px;
+}
+.fenye a:hover {
+    border-color: #FF6501;
+    color: #FF6501;
+    text-decoration: none;
+}
+.fenye a.page_next:hover, .fenye a.page_prev:hover { color:#FFF;}

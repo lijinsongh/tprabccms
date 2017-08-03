@@ -1,0 +1,305 @@
+<extend name="Public:base" />
+<block name="title">订单提交</block>
+<block name="content">
+<style>
+body .demo-class .layui-layer-title{background:#1169EE; color:#fff; border: none;}
+</style>
+<div class="page-header">
+	<h1>首页 &gt;订单中心&gt;订单管理</h1>
+</div>
+<div class="col-xs-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
+			id="myTab">
+			<li class="active"><a href="#home" data-toggle="tab">订单管理</a></li>
+		</ul>
+		<div class="tab-content">
+			<div>
+				<form action="" method="get">
+                <input type="hidden" name="s" value="Admin/DZOrder/ordermanager"/> 
+	          	  <div class="row">
+	          	  	<div class="col-sm-2 m-b-xs">
+		              <input placeholder="订单产生日期" value="{$_GET['sdate']}" class="laydate-icon-molv skindemo form-control" name="sdate" id="sdate" style=" height:36px;cursor:pointer;">
+	                    </div>
+		                 <div class="col-sm-2 m-b-xs" >
+	                       <input placeholder="请输入订单编号" class="form-control" type="text"  style=" height:36px;" name="orderid" id="orderid" value="{$_GET['orderid']}">
+	                    </div>
+                     <div class="col-sm-2 m-b-xs">
+		                    <select name="status" id="status" class="input-sm form-control input-s-sm inline" style="height:36px;">                             
+                                 <option value="0" {$_GET['status']==0?'selected':''}>请选择订单状态</option>
+                                  <option value="1" {$_GET['status']==1?'selected':''}>待审核</option>
+                                  <option value="2" {$_GET['status']==2?'selected':''}>已发货|待结单</option>
+                     </select>
+                     </div>
+                     <div class="col-sm-2 m-b-xs">
+		                    <select name="qianshoustatus" id="qianshoustatus" class="input-sm form-control input-s-sm inline" style="height:36px;">                             
+                                 <option value="0" {$_GET['qianshoustatus']==0?'selected':''}>请选择订单签收状态</option>
+                                  <option value="1" {$_GET['qianshoustatus']==1?'selected':''}>未签收</option>
+                                  <option value="2" {$_GET['qianshoustatus']==2?'selected':''}>已签收</option>
+                                  <option value="3" {$_GET['qianshoustatus']==3?'selected':''}>拒绝签收</option>
+                     </select>
+                     </div>
+                     <div class="col-sm-2 m-b-xs">
+		                    <select name="uid" id="uid" class="input-sm form-control input-s-sm inline" style="height:36px;">                             
+                                 <option value="0" {$_GET['uid']==null?'selected':''}>请选择销售人员</option>
+                                <volist name="xiaoshou" id="vo">
+                                  <option value="{$vo.id}" {$_GET['uid']==$vo['id']?'selected':''}>{$vo.realname}</option>
+                                </volist>
+                     </select>
+                     </div>
+                     <div class="col-sm-2 m-b-xs">
+                     		<div class="col-sm-6 m-b-xs">
+                     		<button type="submit" class="btn btn-sm btn-primary" style=" height:36px; width:4em">查询</button>
+                     		</div>
+                     		<div class="col-sm-6 m-b-xs">
+                     		<button type="button" class="btn btn-sm btn-warning" onclick="importexcel();" style=" height:36px; width:7em;float:right;">导出EXCEL</button>
+                     		</div>
+		                    
+		            </div>
+	          	  </div>
+	          	</form>
+			</div>
+			<br/>
+			<table
+				class="table table-striped table-bordered table-hover table-condensed">
+				<tr>
+					<th></th>
+          <th>订单日期</th>
+          <th>订单编号</th>
+          <th>销售代表</th>
+          <th>客户名称</th>
+          <th>客户电话</th>
+          <th>客户地址</th>
+          <th>产品名称</th>
+          <th>数量</th>
+          <th>单价</th>
+          <th>总价</th>
+          <th>定金</th>
+          <th>返款</th>
+          <th>购买次数</th>
+          <th>备注</th>
+          <th>寄件人</th>
+          <th>寄件人电话</th>
+          <th>是否签收</th>
+          <th>状态</th>
+          <th>操作</th>
+				</tr>
+				<volist name="list" id="vo">
+         <tr>
+         <td><input type="checkbox" name="idbox" id="idbox" value="{$vo.id}"/></td>
+         <td>{$vo.createtime}</td>
+         <td>{$vo.orderid}</td>
+          <td>{$vo.realname}</td>
+          <td>{$vo.kfname}</td>
+          <td>{$vo.kfphone}</td>
+          <td>{$vo.kfadress}</td>
+          <td>
+          <if condition="$vo.pronameother neq null">
+          	  	{$vo.pronameother}
+          	  	<else/>
+          	  	{$vo.proname}
+          	  	</if>
+          	  	</td>
+          <td>{$vo.pronum}</td>
+          <td>{$vo.price}</td>
+          <td>{$vo.totalprice}</td>
+          <td>{$vo.dingjin}</td>
+          <td>{$vo.fankuan}</td>
+          <td>{$vo.fugounum}</td>
+          <td>{$vo.remark}</td>
+          <td>{$vo.jijianname}</td>
+          <td>{$vo.jijianphone}</td>
+          <td>
+          	<if condition="$vo.qianshoustatus eq 0">
+          		未签收
+          	</if>
+          	<if condition="$vo.qianshoustatus eq 1">
+          		已签收
+          	</if>
+          	<if condition="$vo.qianshoustatus eq 2">
+          		拒绝签收
+          	</if>
+          </td>
+          <td>
+          		<if condition="$vo.status eq 0">
+          	  	<span style="color:red;">待审核</span>
+          	  	</if>
+          	  	<if condition="$vo.status eq 1">
+          	  	<span style="color:green;">已发货</span>
+          	  	</if>
+          	  	<if condition="$vo.status eq 2">
+          	  	<span style="color:green;">已结单</span>
+          	  	</if>
+          </td>
+          <td>
+          		<if condition="$vo.qianshoustatus eq 0">
+          			<a href="#qianshou" data-toggle="modal" onclick="editqianshou('{$vo.id}');"><span style="color:red;">签收</span></a>
+          		</if>
+          		<if condition="$vo.status eq 1 or $vo.status eq 2">
+          	  	 <a href="javascript:void(0)" onclick="mingxi('{$vo.id}');">查看物流</a>
+          	  	</if>	
+          	  	<a href="javascript:void(0)" onclick="del_dzorder('{$vo.id}');">删除</a>
+          </td>
+         </tr>
+        </volist>         
+			</table>
+			<div	class="fenye">
+     	{$page}
+     </div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="qianshou" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true" style="padding-top:10%;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">订单签收</h4>
+			</div>
+			<div class="modal-body">
+					<table
+						class="table table-striped table-bordered table-hover table-condensed">
+						<input type="hidden" name="id" id="id"/>
+						<tr>
+ 				<th style="text-align:right;">产品名称</th>
+ 				<td><select name="qianshoustatusother" id="qianshoustatusother" class="input-medium">
+ 								<option value="0" {$_GET['qianshoustatus']==0?'selected':''}>签收</option>
+                                  <option value="1" {$_GET['qianshoustatus']==1?'selected':''}>拒绝签收</option>
+                                </select><span style="color:red;">*</span>
+               </td>
+ 			</tr>
+						<tr>
+							<th></th>
+							<td><a class="btn btn-success" type="button" id="submit">提交</a></td>
+						</tr>
+					</table>
+			</div>
+		</div>
+	</div>
+</div>
+</block>
+<block name="js">
+<script>
+$(function(){
+	laydate.skin('molv');
+	laydate({
+		  elem: '#sdate',
+		  format: 'YYYY-MM-DD', // 分隔符可以任意定义，该例子表示只显示年月
+		  festival: true, //显示节日
+		})
+})
+ function editqianshou(id){
+		$("#id").val(id);
+	}
+$("#submit").click(function(){
+	var id = $("#id").val();
+	var qianshoustatusother = $('#qianshoustatusother').val();
+	 $.ajax({
+			type:"post",
+			url:"?s=Admin/DZOrder/qianshouadmin",
+			data:{'id':id,'qianshoustatusother':qianshoustatusother},
+			dataType : "json",			
+			success : function(data){
+				//layer.msg(data['msg'],{time:80000});
+				if (data['msg'] == 0) {
+		 			layer.msg("签收成功",{time:800},function(){
+						location.reload(true);
+					});
+		 		} else if (data['msg'] == 1) {
+		 			layer.msg("拒绝签收成功",{time:800},function(){
+						location.reload(true);
+					});
+		 		} else if (data['msg'] == 2) {
+		 			layer.msg('签收失败！',{time:800});
+		 		}
+			}
+		});
+});
+	
+function mingxi(id){
+	$index = layer.load(0,{time:6000});
+	$.ajax({
+		type:"post",
+		url:"?s=Admin/DZOrder/getOrderInfoOther",
+		data:{'id':id},
+		dataType : "json",			
+		success : function(data){
+			if(data['status'] == 200){
+		  	    $html="<table class='table table-hover table-bordered' ><thead><th style='text-align:center;'>时间</th><th style='text-align:center;'>地点和跟踪进度</th></thead><tbody id='info'>";
+		  		for(var i=0;i<data['data'].length;i++){
+			  		$html += "<tr><td style='text-align:center;'>"+data['data'][i]['time']+"</td><td style='text-align:center;'>"+data['data'][i]['context']+"</td></tr>";
+			  	}
+		  		$html+="</tbody></table>";
+				 layer.open({
+					  type: 1,  
+					  title:'物流信息',
+					  area: ['600px', '360px'],
+					  shadeClose: false, //点击遮罩关闭
+					  content: $html,
+					  closeBtn:1,
+					  success:function(){
+					  	layer.close($index);
+				 	  }
+				  });
+			}else{
+				layer.close($index);
+				layer.msg(data['message']);
+		 	}
+		}
+	});
+}
+function del_dzorder(id){
+	 if (!confirm("确定删除这条记录?")) {
+        return;
+    }
+	 $.ajax({
+			type:"post",
+			url:"?s=Admin/DZOrder/del_order_other",
+			data:{'id':id},
+			dataType : "json",			
+			success : function(data){
+				if (data['msg'] == 1) {
+		 			layer.msg("删除成功",{time:800},function(){
+			 			f5 = true;
+						location.reload(true);
+					});
+		 		} else if (data['msg'] == 2) {
+		 			layer.msg('删除失败！',{time:800});
+		 		}
+			}
+		});
+}
+
+function importexcel(){
+	 var sdate = $('#sdate').val();
+	 var edate = $('#edate').val();
+	 var uid = $('#uid').val();
+	 var status = $('#status').val();
+	 var orderid = $('#orderid').val();
+	 var qianshoustatus = $('#qianshoustatus').val();
+	 var names = document.getElementsByName("idbox");  
+	 var len = names.length; 
+	 var ids = "";
+	 if (len > 0) {
+		 var i = 0;
+		 for(i = 0; i < len;i++){
+			 if (names[i].checked) {
+				 if (i < (len - 1)) {
+					 ids += names[i].value+",";
+				 } else if (i == (len - 1)) {
+					 ids += names[i].value;
+				 }
+			 }
+		 }
+	 }
+	 var spstr = ids.split("");
+	 spstr = spstr[spstr.length-1];
+	 if (spstr == ",") {
+		 ids = ids.substring(0,ids.length-1);
+	 }
+	 //window.location.href = "?s=DZOrder/phpexcelother&sdate="+sdate+"&edate="+edate+"&uid="+uid+"&status="+status+"&orderid="+orderid;
+	 window.open("?s=Admin/DZOrder/phpexcelother&sdate="+sdate+"&edate="+edate+"&uid="+uid+"&status="+status+"&orderid="+orderid+"&ids="+ids+"&qianshoustatus="+qianshoustatus);
+}
+</script></block>

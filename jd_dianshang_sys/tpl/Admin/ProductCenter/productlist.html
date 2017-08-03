@@ -1,0 +1,133 @@
+<extend name="Public:base" />
+<block name="title">产品管理</block>
+<block name="content">
+<style>
+body .demo-class .layui-layer-title{background:#1169EE; color:#fff; border: none;}
+</style>
+<div class="page-header">
+	<h1>首页 &gt;产品中心&gt; 产品管理</h1>
+</div>
+<div class="col-xs-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
+			id="myTab">
+			<li class="active"><a href="#home" data-toggle="tab">产品管理</a></li>
+		</ul>
+		<div class="tab-content">
+			<div>
+				<form action="" method="get">
+                <input type="hidden" name="s" value="Admin/ProductCenter/productlist"/> 
+	          	  <div class="row">
+		                 <div class="col-sm-2 m-b-xs" >
+	                       <input placeholder="产品名称" class="form-control" type="text"  style=" height:36px;" name="productname" id="productname" value="{$_GET['productname']}">
+	                    </div>
+                     <div class="col-sm-8 m-b-xs">
+		                    <button type="submit" class="btn btn-sm btn-primary" style=" height:36px; width:5em">查询</button>
+		            </div>
+		            <div class="col-sm-2 m-b-xs">
+		                    <a href="#bjy-add" data-toggle="modal" class="btn btn-sm btn-warning" id="editclear" style="height:36px;width:6em;float:right;">添加产品</a>
+		            </div>
+	          	  </div>
+	          	</form>
+			</div>
+			<br/>
+			<table
+				class="table table-striped table-bordered table-hover table-condensed">
+				<tr>
+          <th>产品编号</th>
+          <th>产品名称</th>
+          <th>创建时间</th>
+          <th>操作</th>
+        </tr>
+				<volist name="list" id="vo">
+         <tr>
+         <td>{$vo.id}</td>
+         <td>{$vo.proname}</td>
+          <td>{$vo.createtime}</td>
+          <td><a href="#bjy-add" data-toggle="modal" onclick="update_dzorder('{$vo.id}','{$vo.proname}');">修改</a></td>
+         </tr>
+        </volist>    
+			</table>
+			<div	class="fenye">
+     	{$page}
+     </div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="bjy-add" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">产品添加或修改</h4>
+			</div>
+			<div class="modal-body">
+					<table
+						class="table table-striped table-bordered table-hover table-condensed">
+						<input type="hidden" name="id" id="id"/>
+ 			<tr>
+ 				<th style="text-align:right;">产品名称</th> 
+ 				<td><input type="text" class="input-medium" id="proname" name="proname"  /><span style="color:red;">*</span></td>
+ 			</tr>
+						<tr>
+							<th></th>
+							<td><a class="btn btn-success" type="button" id="submit">提交</a></td>
+						</tr>
+					</table>
+			</div>
+		</div>
+	</div>
+</div>
+</block>
+<block name="js">
+<script>
+$(function(){
+	laydate.skin('molv');
+	laydate({
+		  elem: '#sdate',
+		  format: 'YYYY-MM-DD', // �ָ���������ⶨ�壬�����ӱ�ʾֻ��ʾ����
+		  festival: true, //��ʾ����
+		});
+	laydate({
+		  elem: '#edate',
+		  format: 'YYYY-MM-DD', // �ָ���������ⶨ�壬�����ӱ�ʾֻ��ʾ����
+		  festival: true, //��ʾ����
+		});
+})
+ function update_dzorder(id,proname){
+	$("#id").val(id);
+	$("#proname").val(proname);
+ }
+	
+	$("#submit").click(function(){
+		 var proname = $('#proname').val();
+		 var id = $('#id').val();
+		 if(proname != ""){
+			 $.ajax({
+					type:"post",
+					url:"?s=Admin/ProductCenter/addproduct",
+					data:{'proname':proname,'id':id},
+					dataType : "json",			
+					success : function(data){
+						//layer.msg(data['msg'],{time:80000});
+						if (data['msg'] == 1) {
+				 			layer.msg('操作成功 ！',{time:800},function(){
+				 				$('#devicetable input[type="text"]').val('');
+					 			$('#devicetable input[type="number"]').val('');
+					 			location.reload(true);
+				 			});
+				 			
+				 		} else if (data['msg'] == 2) {
+				 			layer.msg('操作失败！',{time:800});
+				 		} else if (data['msg'] == 0) {
+				 			layer.msg('产品名重复！',{time:800});
+				 		} 
+					}
+				});
+		 }else{
+			 	layer.msg('带*为必填项！',{time:800});
+		 }
+	});
+</script></block>
